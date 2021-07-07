@@ -1,24 +1,5 @@
-# offline-map
+vue+openlayers+瓦片地图
 
-## Project setup
-```
-npm install
-```
+地图地址是可以替换成api，从服务器获取瓦片图
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+内容仅供学习
