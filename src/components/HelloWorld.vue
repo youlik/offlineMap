@@ -1,8 +1,5 @@
 <template>
   <div>
-    <el-input v-model="search" placeholder="请输入地名" @change="searchArea"
-              style="width:300px;position:absolute;top: 0px;z-index: 9999;left: 50%"
-    ></el-input>
     <div ref="olMap" id="map" class="ol-map"/>
     <div id="popup" class="ol-popup">
       <a href="#" id="popup-closer" class="ol-popup-closer"></a>
@@ -29,14 +26,14 @@ import {
 } from 'ol/style'
 import {Point} from 'ol/geom'
 import {Cluster} from 'ol/source'
-import {fromLonLat, transform, toLonLat} from 'ol/proj'
-import {toStringHDMS} from 'ol/coordinate'
+import {fromLonLat} from 'ol/proj'
+// import {toStringHDMS} from 'ol/coordinate'
 
 export default {
   name: 'defineMap',
   data () {
     return {
-      imgUrl: require('../../../src/assets/pointer.png'),
+      imgUrl: require('../../src/assets/pointer.png'),
       map: null,
       pointLayer: null,
       diffLayer: null,
@@ -46,34 +43,26 @@ export default {
   },
   mounted () {
     this.init()
-    this.addSearch()
     this.diffLayer = new VectorLayer({
       source: new VectorSource()
     })
     this.clusterData = {
-      未来科技城: {center: {lng: 119.99082431579592, lat: 30.277877393725625}},
-      中楠樾府: {center: {lng: 119.92396220947268, lat: 30.256453639392525}}
+      点A: {center: {lng: 119.99082431579592, lat: 30.277877393725625}},
+      点B: {center: {lng: 119.92396220947268, lat: 30.256453639392525}}
     }
     let points = [
-      {name: '未来科技城', value: 1},
-      {name: '中楠樾府', value: 1}
+      {name: '点A', value: 1},
+      {name: '点B', value: 1}
     ]
     this.addCluster(this.clusterData, points, true)
     this.addPopup()
     this.addPoint(this.diffLayer, [119.97846324707033, 30.274838322154054])
   },
-  watch: {
-    search (oldVal, newVal) {
-      console.log(oldVal)
-      console.log(newVal)
-    }
-  },
   methods: {
     init () {
-      console.log('歘')
       const tileLayer = new TileLayer({
         source: new XYZ({
-          url: `static/tiles/{z}/{x}/{y}.png`
+          url: `tiles/{z}/{x}/{y}.png`
         })
       })
       // 初始化地图
@@ -90,7 +79,7 @@ export default {
         target: this.$refs.olMap// DOM容器
       })
     },
-    addCluster (clusterData, points, clearup) {
+    addCluster (clusterData, points) {
       let source = new VectorSource()
       let clusterSource = new Cluster({
         distance: parseInt(20, 10),
@@ -122,6 +111,7 @@ export default {
         })
       }
     },
+    // 添加弹窗
     addPopup () {
       var container = document.getElementById('popup')
       var closer = document.getElementById("popup-closer");
@@ -137,8 +127,8 @@ export default {
 
       this.map.addOverlay(this.overlay)
       this.map.on('click', function (evt) {
-        //查询当前点击的地方是否存在要素
-        var feature = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) { return feature; });
+        //查询当前点击的地方是否存在要素(图标)
+        var feature = this.map.forEachFeatureAtPixel(evt.pixel, function (feature) { return feature; });
         console.log(feature)
         if (feature) {
           content.innerHTML = ''; //清空popup的内容容器
@@ -162,7 +152,7 @@ export default {
       }.bind(this);
     },
     clusterStyle () {
-      return (feature, solution) => {
+      return () => {
         var style = new Style({
           image: new Icon({
             src: this.imgUrl,
@@ -170,7 +160,7 @@ export default {
             anchor: [1, 1]
           }),
           text: new Text({
-            text: '555',
+            text: '我是一个点',
             fill: new Fill({
               color: '#FFF'
             }),
